@@ -27,7 +27,7 @@ export default function TextDisassembly({ text }: TextDisassemblyProps) {
     );
 
     return (
-        <div className="w-full h-full overflow-hidden whitespace-pre-wrap break-words px-4 text-left text-[18px] leading-[1.8] text-[#E6E6EB] pointer-events-none">
+        <div className="h-full w-full overflow-hidden whitespace-pre-wrap break-words text-center text-[58px] font-light leading-[1.46] text-white/64 pointer-events-none">
             {characters.map((char) => (
                 <motion.span
                     key={char.id}

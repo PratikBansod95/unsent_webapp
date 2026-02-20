@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import GlowButton from "./GlowButton";
 import TextDisassembly from "./TextDisassembly";
 import GlowBackground from "./GlowBackground";
+import CosmicBackground from "./CosmicBackground";
 
 type AppState = "empty" | "writing" | "paused" | "releasing" | "released";
 
@@ -23,9 +24,7 @@ export default function UnsentApp() {
         }
 
         if (state === "writing" && text.trim().length > 0) {
-            timerRef.current = window.setTimeout(() => {
-                setState("paused");
-            }, 5000);
+            timerRef.current = window.setTimeout(() => setState("paused"), 5000);
         }
 
         return () => {
@@ -40,30 +39,21 @@ export default function UnsentApp() {
         return () => {
             if (releaseRef.current) {
                 window.clearTimeout(releaseRef.current);
-                releaseRef.current = null;
             }
         };
     }, []);
 
-    const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const newText = e.target.value;
-        setText(newText);
-
-        if (newText.length > 0) {
-            if (state !== "writing") setState("writing");
-        } else {
-            setState("empty");
-        }
-    };
-
-    const dismissKeyboard = () => {
-        textareaRef.current?.blur();
+    const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const nextText = event.target.value;
+        setText(nextText);
+        if (nextText.trim().length === 0) setState("empty");
+        else if (state !== "writing") setState("writing");
     };
 
     const handleRelease = () => {
         if (!text.trim().length) return;
 
-        dismissKeyboard();
+        textareaRef.current?.blur();
         setState("releasing");
 
         if (releaseRef.current) {
@@ -75,7 +65,7 @@ export default function UnsentApp() {
             setState("released");
             setText("");
             releaseRef.current = null;
-        }, reduceMotion ? 500 : 3000);
+        }, reduceMotion ? 400 : 3000);
     };
 
     const handleWriteAgain = () => {
@@ -84,91 +74,109 @@ export default function UnsentApp() {
         requestAnimationFrame(() => textareaRef.current?.focus());
     };
 
+    const glowMode =
+        state === "releasing" ? "releasing" : state === "paused" ? "paused" : state === "released" ? "released" : "none";
+
     return (
-        <div className="relative z-20 h-full w-full max-w-5xl px-4 py-4 md:px-8 md:py-8">
-            <div className="relative h-full rounded-[28px] border border-white/10 bg-black/20 backdrop-blur-[2px]">
-                <div className="pointer-events-none absolute inset-0 rounded-[28px] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]" />
+        <div className="relative h-full w-full overflow-hidden">
+            <CosmicBackground />
 
-                <header className="absolute inset-x-0 top-0 z-40 flex items-center justify-between px-5 pt-5 md:px-8">
-                    <div className="font-display text-[20px] tracking-[0.08em] text-white/82">Unsent</div>
-                    <div className="text-[11px] tracking-[0.08em] uppercase text-white/48">
-                        Private by design
-                    </div>
-                </header>
+            <div className="cosmos-vignette pointer-events-none absolute inset-0 z-10" />
+            <div className="cosmos-stripes pointer-events-none absolute inset-0 z-10" />
 
-                <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-40 px-5 pb-4 md:px-8 md:pb-6">
-                    <p className="text-[11px] leading-relaxed tracking-[0.03em] text-white/38">
-                        This page does not save, share, or remember what you write.
-                    </p>
-                </footer>
+            <div className="pointer-events-none absolute right-8 top-14 z-20 h-[94px] w-[94px] rounded-full border border-[#BBAEF6]/60 bg-[#A792FF]/18 shadow-[0_0_30px_8px_rgba(157,133,255,0.28)]">
+                <div className="absolute inset-[14%] rounded-full bg-[radial-gradient(circle,rgba(210,190,255,0.8)_0%,rgba(179,154,255,0.35)_45%,transparent_80%)]" />
+                <motion.div
+                    className="absolute inset-0 rounded-full border border-[#C9BEFF]/35"
+                    animate={{ opacity: [0.45, 0.7, 0.45], scale: [0.98, 1.02, 0.98] }}
+                    transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
+                />
+            </div>
 
-                <div className="pointer-events-none absolute inset-0 flex items-end justify-center z-0">
-                    <GlowBackground active={state === "releasing"} />
-                </div>
+            <header className="pointer-events-none absolute inset-x-0 top-[88px] z-30 text-center">
+                <h1 className="text-[56px] font-light tracking-[0.09em] text-white/60 md:text-[62px]">Unsent</h1>
+            </header>
 
-                <div className="relative z-30 flex h-full flex-col px-3 pb-20 pt-20 md:px-6 md:pt-24">
-                    <AnimatePresence mode="wait">
-                        {(state === "empty" || state === "writing" || state === "paused") && (
-                            <motion.textarea
-                                ref={textareaRef}
-                                key="textarea"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: reduceMotion ? 0.15 : 0.45 }}
-                                className="h-full w-full resize-none bg-transparent px-2 pb-4 text-[18px] leading-[1.8] text-[#E6E6EB] outline-none caret-[#E6E6EB] placeholder:text-white/38"
-                                placeholder="Write it.\nNo one will read it."
-                                value={text}
-                                onChange={handleTextChange}
-                                spellCheck={false}
-                                autoFocus
-                                onKeyDown={(event) => {
-                                    if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && state === "paused") {
-                                        event.preventDefault();
-                                        handleRelease();
-                                    }
-                                }}
-                            />
-                        )}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 top-1/2 z-10">
+                <GlowBackground mode={glowMode} />
+            </div>
 
-                        {state === "releasing" && (
-                            <div className="h-full w-full">
-                                <TextDisassembly key="disassembly" text={text} />
-                            </div>
-                        )}
+            <main className="relative z-30 flex h-full w-full flex-col items-center">
+                <AnimatePresence mode="wait">
+                    {(state === "empty" || state === "writing" || state === "paused") && (
+                        <motion.textarea
+                            ref={textareaRef}
+                            key="textarea"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: reduceMotion ? 0.15 : 0.45 }}
+                            className="h-full w-full resize-none bg-transparent px-8 pb-32 pt-[40vh] text-center text-[58px] font-light leading-[1.46] text-white/75 outline-none caret-white/75 placeholder:text-white/26 md:px-20 md:pt-[42vh]"
+                            placeholder="Write what you never had the chance to say"
+                            value={text}
+                            onChange={handleTextChange}
+                            spellCheck={false}
+                            autoFocus
+                            onKeyDown={(event) => {
+                                if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && state === "paused") {
+                                    event.preventDefault();
+                                    handleRelease();
+                                }
+                            }}
+                        />
+                    )}
 
-                        {state === "released" && (
-                            <motion.div
-                                key="released"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: reduceMotion ? 0.15 : 1, ease: "easeIn" }}
-                                className="flex h-full flex-col items-center justify-center gap-8 px-4 text-center"
-                            >
-                                <p className="font-display text-[30px] leading-tight text-[#F0ECE8]/90 md:text-[36px]">
-                                    You don&apos;t have to carry that anymore.
-                                </p>
-                                <GlowButton onClick={handleWriteAgain} text="Write Again" />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
+                    {state === "releasing" && (
+                        <motion.div key="disassembly" className="h-full w-full px-8 pt-[40vh] md:px-20 md:pt-[42vh]">
+                            <TextDisassembly text={text} />
+                        </motion.div>
+                    )}
 
-                <AnimatePresence>
-                    {state === "paused" && (
+                    {state === "released" && (
                         <motion.div
-                            key="release-btn"
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 8 }}
-                            transition={{ duration: reduceMotion ? 0.15 : 0.8, ease: "easeInOut" }}
-                            className="absolute bottom-16 left-1/2 z-50 -translate-x-1/2"
+                            key="released"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: reduceMotion ? 0.15 : 1 }}
+                            className="flex h-full w-full items-center justify-center px-8 pb-28 pt-[34vh] text-center md:px-20"
                         >
-                            <GlowButton onClick={handleRelease} text="Release" />
+                            <p className="text-[60px] font-light leading-[1.35] text-white/82">
+                                You don&apos;t have to carry that anymore.
+                            </p>
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
+            </main>
+
+            <AnimatePresence>
+                {state === "paused" && (
+                    <motion.div
+                        key="release-btn"
+                        initial={{ opacity: 0, y: 18 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 12 }}
+                        transition={{ duration: reduceMotion ? 0.15 : 0.8, ease: "easeInOut" }}
+                        className="absolute bottom-14 left-1/2 z-40 -translate-x-1/2"
+                    >
+                        <GlowButton onClick={handleRelease} text="Release" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {state === "released" && (
+                    <motion.div
+                        key="write-again-btn"
+                        initial={{ opacity: 0, y: 18 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 12 }}
+                        transition={{ duration: reduceMotion ? 0.15 : 0.8, ease: "easeInOut" }}
+                        className="absolute bottom-14 left-1/2 z-40 -translate-x-1/2"
+                    >
+                        <GlowButton onClick={handleWriteAgain} text="Write again" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
