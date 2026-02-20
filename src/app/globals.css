@@ -3,14 +3,33 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-top: #0f1115;
+    --bg-bottom: #1a1d24;
+    --text-main: #e6e6eb;
+    --accent: #e8a87c;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
   body {
-    @apply bg-[#0F1115] text-[#E6E6EB] antialiased touch-none;
-    /* Optional: Disable selection to feel more like an app */
-    user-select: none; 
+    @apply antialiased;
+    background: radial-gradient(
+        110% 80% at 80% 120%,
+        rgba(232, 168, 124, 0.08) 0%,
+        rgba(232, 168, 124, 0.02) 38%,
+        transparent 64%
+      ),
+      linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    color: var(--text-main);
+    font-family: var(--font-ui), sans-serif;
+    min-height: 100dvh;
+    overscroll-behavior: none;
   }
 }
 
-/* Custom Noise Overlay */
 .noise-overlay {
   position: absolute;
   top: 0;
@@ -23,8 +42,11 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* Hide scrollbar */
 ::-webkit-scrollbar {
-    width: 0px;
+    width: 0;
     background: transparent;
+}
+
+.font-display {
+  font-family: var(--font-display), serif;
 }

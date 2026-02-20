@@ -1,35 +1,52 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 
 interface TextDisassemblyProps {
     text: string;
 }
 
+const seededNoise = (seed: number) => {
+    const value = Math.sin(seed * 12.9898) * 43758.5453;
+    return value - Math.floor(value);
+};
+
 export default function TextDisassembly({ text }: TextDisassemblyProps) {
-    const characters = text.split("");
+    const characters = useMemo(
+        () =>
+            text.split("").map((character, index) => ({
+                id: `${character}-${index}`,
+                character,
+                y: 15 + seededNoise(index + 1) * 40,
+                x: seededNoise(index + 19) * 8 - 4,
+                rotate: seededNoise(index + 37) * 0.16 - 0.08,
+                delay: seededNoise(index + 59) * 0.25,
+            })),
+        [text]
+    );
 
     return (
-        <div className="w-full h-full flex flex-wrap content-start text-left text-[#E6E6EB] text-lg font-light leading-[1.8] pointer-events-none whitespace-pre-wrap break-words p-6 overflow-hidden">
-            {characters.map((char, i) => (
+        <div className="w-full h-full overflow-hidden whitespace-pre-wrap break-words px-4 text-left text-[18px] leading-[1.8] text-[#E6E6EB] pointer-events-none">
+            {characters.map((char) => (
                 <motion.span
-                    key={i}
+                    key={char.id}
                     initial={{ opacity: 1, y: 0, rotate: 0 }}
                     animate={{
                         opacity: [1, 0.85, 0.15, 0],
-                        y: Math.random() * 40 + 15, // 15-55px range
-                        x: Math.random() * 8 - 4, // +/- 4px spread
-                        rotate: Math.random() * 0.16 - 0.08, // +/- 0.08 rad
-                        filter: ["blur(0px)", "blur(2px)"]
+                        y: char.y,
+                        x: char.x,
+                        rotate: char.rotate,
+                        filter: ["blur(0px)", "blur(2px)"],
                     }}
                     transition={{
                         duration: 2.8,
                         ease: "easeInOut",
-                        delay: Math.random() * 0.25 // Staggered
+                        delay: char.delay,
                     }}
                     className="inline-block"
                 >
-                    {char === " " ? "\u00A0" : char}
+                    {char.character === " " ? "\u00A0" : char.character}
                 </motion.span>
             ))}
         </div>

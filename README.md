@@ -1,60 +1,54 @@
-# Unsent
+# Unsent Web
 
-A single-purpose emotional release app built with Flutter.
+Unsent is a single-purpose emotional release web app.
 
-## Purpose
+Write what you need to write, pause, and release it.  
+Nothing is stored, shared, or remembered.
 
-Write something heavy... and gently set it down.
+## Stack
 
-**Nothing is saved. Nothing is shared. Nothing is remembered.**
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- Framer Motion
 
-## Design Philosophy
+## Product Flow
 
-- Quiet
-- Heavy (emotionally)
-- Safe
-- Premium
-- Private
+1. `empty`: prompt is visible
+2. `writing`: user types freely
+3. `paused`: 5s inactivity reveals `Release`
+4. `releasing`: text disassembles with synchronized glow
+5. `released`: closure message and restart action
 
-## Technical Details
-
-- **Framework**: Flutter/Dart
-- **Target**: Android
-- **Persistence**: None
-- **Network**: Offline only
-- **Performance**: 60 FPS target
-
-## Features
-
-- Full-screen text input with no distractions
-- Pause detection after 5 seconds of inactivity
-- Beautiful text disassembly animation
-- Warm glow release effect
-- Emotional closure message
-
-## Running the App
+## Local Development
 
 ```bash
-flutter pub get
-flutter run
+npm install
+npm run dev
 ```
 
-## States
+Open `http://localhost:3000`.
 
-1. **Empty/Ready** - Keyboard open, cursor blinking
-2. **Writing** - User types freely
-3. **Pause Detection** - Release button appears after 5s pause
-4. **Release Animation** - Text gently drifts away (2.5-3s)
-5. **After State** - Closure message and "Write again" option
+## Production Build
 
-## Non-Negotiables
+```bash
+npm run lint
+npm run build
+npm start
+```
 
-❌ NO saving
-❌ NO sharing
-❌ NO login
-❌ NO analytics
-❌ NO notifications
-❌ NO onboarding
-❌ NO ads
+## Deploy To Vercel
 
-Trust and emotional safety are core to this product.
+1. Push repository to GitHub/GitLab/Bitbucket.
+2. Import project in Vercel.
+3. Set root directory to `Unsent-main/unsent-web` if needed.
+4. Deploy with defaults:
+   - Build command: `npm run build`
+   - Output: `.next`
+
+## Notes
+
+- PWA manifest is in `public/manifest.json`.
+- App icon is in `public/icon.svg` and `src/app/icon.svg`.
+- There is no backend and no persistence layer.

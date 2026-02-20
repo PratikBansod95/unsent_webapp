@@ -12,7 +12,7 @@ export default function GlowButton({ onClick, text }: GlowButtonProps) {
         <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={onClick}
-            className="px-8 py-3 rounded-full bg-black/40 border border-[#E8A87C]/30 text-[#E6E6EB]/90 text-base tracking-wide transition-all duration-300 outline-none backdrop-blur-sm"
+            className="rounded-full border border-[#E8A87C]/30 bg-black/45 px-8 py-3 text-base tracking-[0.08em] text-[#E6E6EB]/92 outline-none transition-all duration-300 backdrop-blur-sm"
             style={{
                 boxShadow: `
                     0 10px 32px 4px rgba(232,168,124,0.2),
@@ -21,6 +21,7 @@ export default function GlowButton({ onClick, text }: GlowButtonProps) {
                 `
             }}
             whileHover={{
+                scale: 1.01,
                 boxShadow: `
                     0 15px 40px 6px rgba(232,168,124,0.25),
                     0 10px 25px 3px rgba(232,168,124,0.45),
