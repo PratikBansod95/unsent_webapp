@@ -23,7 +23,7 @@ type Streak = {
     vy: number;
 };
 
-const STAR_COUNT = 950;
+const BASE_STAR_DENSITY = 0.00095;
 const WARM_STAR_RATIO = 0.14;
 
 const seededNoise = (seed: number) => {
@@ -61,7 +61,12 @@ export default function CosmicBackground() {
 
         const initStars = () => {
             stars.length = 0;
-            for (let i = 0; i < STAR_COUNT; i += 1) {
+            const targetCount = Math.max(
+                420,
+                Math.floor(width * height * BASE_STAR_DENSITY * (width < 700 ? 0.72 : 1))
+            );
+
+            for (let i = 0; i < targetCount; i += 1) {
                 const noiseA = seededNoise(i + 1);
                 const noiseB = seededNoise(i + 17);
                 const noiseC = seededNoise(i + 97);

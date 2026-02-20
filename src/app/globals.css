@@ -21,6 +21,8 @@
     font-family: var(--font-ui), sans-serif;
     min-height: 100dvh;
     overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
   }
 }
 
